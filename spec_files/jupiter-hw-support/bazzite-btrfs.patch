@@ -1,25 +1,13 @@
-diff --git a/etc/systemd/system/steamos-automount@.service b/etc/systemd/system/steamos-automount@.service
-index dd700da..152e231 100644
---- a/etc/systemd/system/steamos-automount@.service
-+++ b/etc/systemd/system/steamos-automount@.service
-@@ -14,6 +14,7 @@ Description=Mount removable drive %i and notify Steam
- [Service]
- Type=oneshot
- RemainAfterExit=true
-+EnvironmentFile=/etc/default/steamos-btrfs
- ExecStart=/usr/libexec/steamos-automount add %i
- ExecStop=/usr/libexec/steamos-automount remove %i
- ExecReload=/usr/libexec/steamos-automount retrigger %i
-diff --git a/usr/lib/hwsupport/format-device.sh b/usr/lib/hwsupport/format-device.sh
-index b136413..d3cbb16 100755
---- a/usr/lib/hwsupport/format-device.sh
-+++ b/usr/lib/hwsupport/format-device.sh
-@@ -2,6 +2,8 @@
- 
- set -e
- 
-+source /etc/default/steamos-btrfs
-+
- # If the script is not run from a tty then send a copy of stdout and
- # stderr to the journal. In this case stderr is also redirected to stdout.
- if ! tty -s; then
+diff --git a/usr/lib/hwsupport/steamos-automount.sh b/usr/lib/hwsupport/steamos-automount.sh
+index a9408dd..b5a0e6b 100755
+--- a/usr/lib/hwsupport/steamos-automount.sh
++++ b/usr/lib/hwsupport/steamos-automount.sh
+@@ -36,7 +36,7 @@ send_steam_url()
+   if pgrep -x "steam" > /dev/null; then
+       # TODO use -ifrunning and check return value - if there was a steam process and it returns -1, the message wasn't sent
+       # need to retry until either steam process is gone or -ifrunning returns 0, or timeout i guess
+-      systemd-run -M ${DECK_UID}@ --user --collect --wait sh -c "./.steam/root/ubuntu12_32/steam steam://${command}/${encoded@Q}"
++      systemd-run --uid=${DECK_UID} --collect --wait sh -c "/usr/bin/steam steam://${command}/${encoded@Q}"
+       echo "Sent URL to steam: steam://${command}/${arg} (steam://${command}/${encoded})"
+   else
+       echo "Could not send steam URL steam://${command}/${arg} (steam://${command}/${encoded}) -- steam not running"
