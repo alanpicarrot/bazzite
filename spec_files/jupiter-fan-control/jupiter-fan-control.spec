@@ -21,15 +21,16 @@ SteamOS 3.0 Steam Deck Fan Controller
 %define debug_package %{nil}
 
 %prep
-%setup -n %{name}-main
-%patch 0 -p0
+%autosetup -n %{name}-main -p1
 
 %build
 
 %install
 mkdir -p %{buildroot}%{_unitdir}/
-mkdir -p %{buildroot}%{_datadir}/
-cp -rv usr/share/* %{buildroot}%{_datadir}
+mkdir -p %{buildroot}%{_datadir}/jupiter-fan-control
+mkdir -p %{buildroot}%{_libexecdir}/jupiter-fan-control
+cp -v usr/share/jupiter-fan-control/*.yaml %{buildroot}%{_datadir}/jupiter-fan-control/
+cp -v usr/share/jupiter-fan-control/*.py %{buildroot}%{_libexecdir}/jupiter-fan-control/
 cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}/jupiter-fan-control.service
 
 # Do post-installation
@@ -48,9 +49,9 @@ cp -v usr/lib/systemd/system/jupiter-fan-control.service %{buildroot}%{_unitdir}
 # are going to be installed into target system where the rpm is installed.
 %files
 %doc README.md
-%{_datadir}/jupiter-fan-control/fancontrol.py
-%{_datadir}/jupiter-fan-control/jupiter-fan-control-config.yaml
-%{_datadir}/jupiter-fan-control/PID.py
+%{_libexecdir}/jupiter-fan-control/fancontrol.py
+%{_libexecdir}/jupiter-fan-control/PID.py
+%{_datadir}/jupiter-fan-control/*.yaml
 %{_unitdir}/jupiter-fan-control.service
 
 # Finally, changes from the latest release of your application are generated from

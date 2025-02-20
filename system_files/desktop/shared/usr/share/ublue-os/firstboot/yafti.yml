@@ -9,95 +9,34 @@ screens:
       title: "Welcome to Bazzite"
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       description: |
-        Configure your system to get started
-  configure-bazzite-arch:
-    source: yafti.screen.package
-    values:
-      title: Setting up Bazzite Arch (This can take a long time)
-      condition:
-        run: grep -qvz "bazzite-arch" <<< $(distrobox list)
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      groups:
-        Install Bazzite Arch:
-          description: Sets up a custom Arch Linux OCI in Distrobox that Steam, Lutris, and other gaming workloads will be run inside of.
-          default: true
-          packages:
-          - Install Bazzite Arch: just --unstable install-bazzite-arch
-  configure-bazzite:
+        Install additional applications.
+  applications:
     source: yafti.screen.package
     values:
       title: Setting up Bazzite
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
-        Add input group to current user:
-          description: Adds the input group to your current user. Required by certain controller drivers.
-          default: true
-          packages:
-          - Set input group: just --unstable add-user-to-input-group
-        Greenlight:
-          description: A utility for xCloud and xHome streaming
+        Sunshine:
+          description: A self-hosted game stream host for Moonlight
           default: false
           packages:
-          - Retrieve Greenlight: just --unstable get-greenlight
-        Nix Package Manager:
-          description: Nix is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible
+          - Enable Sunshine: ujust setup-sunshine enable
+        EmuDeck:
+          description: A utility for installing and configuring emulators.
           default: false
           packages:
-          - Install Nix Package Support: sudo -A just --unstable install-nix
-          - Install Fleek (Requires Nix): just --unstable install-fleek
-        Brew Package Manager:
-          description: The missing package manager for macOS (or Linux)
-          default: false
-          packages:
-          - Install Brew: sudo -A just --unstable install-brew
-          - Add Brew to shell: just --unstable install-brew-to-shell
-        OpenRazer:
-          description: Enables additional capabilities for Razer Hardware
-          default: false
-          packages:
-          - Install OpenRazer: just --unstable install-openrazer
-        OpenTabletDriver:
-          description: Open source, cross-platform, user-mode tablet driver
-          default: false
-          packages:
-          - Install OpenTabletDriver: just --unstable install-opentabletdriver
-        Oversteer:
-          description: Application to control Logitech steering wheels
-          default: false
-          packages:
-          - Install Oversteer: just --unstable install-oversteer
-        Solaar:
-          description: Application to control Logitech Mice, Keyboards, and Trackpads
-          default: false
-          packages:
-          - Install Solaar: just --unstable install-solaar
-        Wootility:
-          description: A configurator for Wooting keyboards
-          default: false
-          packages:
-          - Retrieve Wootility: just --unstable get-wootility
+          - Retrieve EmuDeck: ujust install-emudeck
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-resilio-sync
-        scrcpy:
-          description: scrcpy provides display and control of Android devices connected on USB (or over TCP/IP)
+          - Install Resilio Sync: ujust install-resilio-sync
+        lact:
+          description: LACT provides GPU overclocking for AMD & Nvidia GPUs
           default: false
           packages:
-          - Install Resilio Sync: just --unstable install-scrcpy
-  amd-additions:
-    source: yafti.screen.package
-    values:
-      title: AMD Additions
-      condition:
-        run: grep -qv 'nvidia' <<< $(jq -r '."image-flavor"' < /usr/share/ublue-os/image-info.json)
-      show_terminal: true
-      package_manager: yafti.plugin.run
-      packages:
-        - CoreCtrl (GPU Overclocking): just --unstable install-corectrl
+          - Install LACT: ujust install-lact
   nvidia-additions:
     source: yafti.screen.package
     values:
@@ -107,140 +46,54 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       packages:
-        - GreenWithEnvy (GPU Overclocking): flatpak install --user --noninteractive com.leinardi.gwe
-        - Supergfxctl (Hybrid GPU Switching): just --unstable enable-supergfxctl
-  applications:
+        - Supergfxctl (Laptop Hybrid GPU Switching): ujust enable-supergfxctl
+  configure-bazzite:
     source: yafti.screen.package
     values:
-      title: Application Installation
+      title: System Configuration
       show_terminal: true
-      package_manager: yafti.plugin.flatpak
-      package_manager_defaults:
-        user: true
-        system: false
+      package_manager: yafti.plugin.run
       groups:
-        Web Browsers:
-          description: Additional browsers to complement Firefox
+        Add input group to current user:
+          description: Adds the input group to your current user. Required by certain controller drivers.
+          default: true
+          packages:
+          - Set input group: sudo -A ujust add-user-to-input-group
+        Visible Password Asterisks:
+            description: Toggles pwfeedback on.
+            default: true
+            packages:
+            - Enable pwfeedback: sudo -A ujust toggle-password-feedback on
+        OpenRazer:
+          description: Enables additional capabilities for Razer Hardware
           default: false
           packages:
-          - Brave: com.brave.Browser
-          - Google Chrome: com.google.Chrome
-          - LibreWolf: io.gitlab.librewolf-community
-          - Microsoft Edge: com.microsoft.Edge
-          - Opera: com.opera.Opera
-        Gaming:
-          description: "Rock and Stone!"
+          - Install OpenRazer: ujust install-openrazer
+        OpenRGB:
+          description: Open source RGB lighting control that doesn't depend on manufacturer software
           default: false
           packages:
-          - Bottles: com.usebottles.bottles
-          - Chiaki (PlayStation Remote Play): re.chiaki.Chiaki
-          - Discord: com.discordapp.Discord
-          - DOSBox Staging: io.github.dosbox-staging
-          - GeForce NOW Electron: io.github.hmlendea.geforcenow-electron
-          - Heroic Games Launcher (GOG &amp; Epic): com.heroicgameslauncher.hgl
-          - itch: io.itch.itch
-          - ludusavi (Game Save Backup): com.github.mtkennerly.ludusavi
-          - Minecraft (Prism Launcher): org.prismlauncher.PrismLauncher
-          - Minecraft Bedrock Launcher: io.mrarm.mcpelauncher
-          - Moonlight: com.moonlight_stream.Moonlight
-          - Mumble: info.mumble.Mumble
-          - OpenMW: org.openmw.OpenMW
-          - osu: sh.ppy.osu
-          - Parsec: com.parsecgaming.parsec
-          - Space Cadet Pinball: com.github.k4zmu2a.spacecadetpinball
-          - Sonic Robo Blast 2: org.srb2.SRB2
-          - Steam Link: com.valvesoftware.SteamLink
-          - SuperTux: org.supertuxproject.SuperTux
-          - SuperTuxKart: net.supertuxkart.SuperTuxKart
-          - TeamSpeak: com.teamspeak.TeamSpeak
-          - XIV Launcher (Final Fantasy XIV): dev.goats.xivlauncher
-        Emulation:
-          description: Play games like it's 1972
+          - Install OpenRGB: ujust install-openrgb
+        OpenTabletDriver:
+          description: Open source, cross-platform, user-mode tablet driver
           default: false
           packages:
-          - Cemu: info.cemu.Cemu
-          - Citra: org.citra_emu.citra
-          - Dolphin: org.DolphinEmu.dolphin-emu
-          - DuckStation: org.duckstation.DuckStation
-          - MAME: org.mamedev.MAME
-          - melonDS: net.kuribo64.melonDS
-          - mGBA: io.mgba.mGBA
-          - PCSX2: net.pcsx2.PCSX2
-          - Pegasus: org.pegasus_frontend.Pegasus
-          - PPSSPP: org.ppsspp.PPSSPP
-          - RetroArch: org.libretro.RetroArch
-          - RetroDECK: net.retrodeck.retrodeck
-          - Rosalie's Mupen GUI: com.github.Rosalie241.RMG
-          - RPCS3: net.rpcs3.RPCS3
-          - Ryujinx: org.ryujinx.Ryujinx
-          - ScummVM: org.scummvm.ScummVM
-          - Snes9x: com.snes9x.Snes9x
-          - Stella: io.github.stella_emu.Stella
-          - xemu: app.xemu.xemu
-          - yuzu: org.yuzu_emu.yuzu
-        Streaming:
-          description: Stream to the Internet
+          - Install OpenTabletDriver: ujust install-opentabletdriver
+        Oversteer:
+          description: Application to control supported steering wheels
           default: false
           packages:
-          - OBS Studio: com.obsproject.Studio
-          - Boatswain for Streamdeck: com.feaneron.Boatswain
-        Music:
-          description: "Rock and Roll!"
+          - Install Oversteer: ujust install-oversteer
+        CoolerControl:
+            description: A GUI for viewing all your system's sensors and for creating custom fan and pump profiles
+            default: false
+            packages:
+            - Install CoolerControl: ujust install-coolercontrol
+        Wootility:
+          description: A configurator for Wooting keyboards
           default: false
           packages:
-          - Cider (Apple Music Client): sh.cider.Cider
-          - Spotify: com.spotify.Client
-          - Strawberry Music Player: org.strawberrymusicplayer.strawberry
-          - Tidal-hifi: com.mastermindzh.tidal-hifi
-        Office/Productivity:
-          description: Bow to Capitalism
-          default: false
-          packages:
-          - Ardour: org.ardour.Ardour
-          - Blender: org.blender.Blender
-          - darktable: org.darktable.Darktable
-          - GIMP: org.gimp.GIMP
-          - Inkscape: org.inkscape.Inkscape
-          - Joplin: net.cozic.joplin_desktop
-          - Kdenlive: org.kde.kdenlive
-          - Krita: org.ardour.Ardour
-          - LibreOffice: org.libreoffice.LibreOffice
-          - Obsidian: md.obsidian.Obsidian
-          - OnlyOffice: org.onlyoffice.desktopeditors
-          - Slack: com.slack.Slack
-          - Standard Notes: org.standardnotes.standardnotes
-          - Tenacity: org.tenacityaudio.Tenacity
-          - Thunderbird Email: org.mozilla.Thunderbird
-          - Xournal++: com.github.xournalpp.xournalpp
-        Utilities:
-          description: Helpful tools
-          default: false
-          packages:
-          - Barrier: com.github.debauchee.barrier
-          - Bitwarden: com.bitwarden.desktop
-          - Calibre: com.calibre_ebook.calibre
-          - Easy Effects: com.github.wwmm.easyeffects
-          - Fedora Media Writer: org.fedoraproject.MediaWriter
-          - JamesDSP: me.timschneeberger.jdsp4linux
-          - KeePassXC: org.keepassxc.KeePassXC
-          - OpenRGB: org.openrgb.OpenRGB
-          - PinApp: io.github.fabrialberio.pinapp
-          - qBittorrent: org.qbittorrent.qBittorrent
-          - Syncthing: com.github.zocker_160.SyncThingy
-          - VLC: org.videolan.VLC
-  theme:
-    source: yafti.screen.title
-    values:
-      title: "GNOME Theme"
-      condition:
-        run: grep -q 'silverblue' <<< $(jq -r '."base-image-name"' < /usr/share/ublue-os/image-info.json)
-      links:
-      - "Vapor Theme":
-          run: just --unstable enable-vapor-theme
-      - "VGUI2 Theme":
-          run: just --unstable enable-vgui2-theme
-      description: |
-        Optionally apply a Valve-inspired theme to GNOME via Gradience. Note that custom themes are not officially supported by GNOME and some applications can break. Please avoid reporting issues to application developers until you've tested against the default theme.
+          - Retrieve Wootility: ujust install-wootility
   final-screen:
     source: yafti.screen.title
     values:
@@ -248,12 +101,14 @@ screens:
       icon: "/usr/share/ublue-os/bazzite/logo.svg"
       links:
       - "Install More Applications":
-          run: /usr/bin/plasma-discover
-      - "Website":
-          run: /usr/bin/xdg-open https://ublue.it
+          run: /usr/bin/plasma-discover || /usr/bin/gnome-software
+      - "Documentation":
+          run: /usr/bin/xdg-open https://docs.bazzite.gg
+      - "Forums":
+          run: /usr/bin/xdg-open https://universal-blue.discourse.group/c/bazzite/5
       - "Join the Discord Community":
           run: /usr/bin/xdg-open https://discord.gg/XjG48C7VHx
       - "Reboot now":
           run: systemctl reboot
       description: |
-        Thank you for trying Bazzite. Please reboot to apply changes made by this setup utility.
+        Please reboot to apply changes made by this setup utility.
